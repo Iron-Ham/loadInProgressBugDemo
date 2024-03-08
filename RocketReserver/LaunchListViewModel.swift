@@ -55,8 +55,6 @@ class LaunchListViewModel: ObservableObject {
         )
 
         cancellable = pager?.receive(on: DispatchQueue.main).sink { result in
-            self.isLoading = false
-
             switch result {
             case let .success(data):
                 let (output, source) = data
@@ -71,6 +69,7 @@ class LaunchListViewModel: ObservableObject {
             case let .failure(error):
                 print("skipping error: \(error)")
             }
+            self.isLoading = false
         }
     }
 
