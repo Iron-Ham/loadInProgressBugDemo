@@ -11,6 +11,7 @@ extension LaunchListQuery.Data.Launches.Launch: Identifiable { }
     var showTailSpinner = false
     var canLoadNext: Bool { pager.canLoadNext }
     var launches: [LaunchListQuery.Data.Launches.Launch] = []
+    var hasFirstPageLoaded: Bool = false
     var error: Error?
     var showError: Bool {
         get { error != nil }
@@ -35,8 +36,11 @@ extension LaunchListQuery.Data.Launches.Launch: Identifiable { }
         )
         pager.subscribe { result in
             switch result {
-            case .success((let launches, _)):
+            case .success((let launches, let source)):
                 self.launches = launches
+                if source == .fetch {
+                    self.hasFirstPageLoaded = true
+                }
             case .failure(let error):
                 // These are network errors, and worth showing to the user.
                 self.error = error
@@ -51,6 +55,7 @@ extension LaunchListQuery.Data.Launches.Launch: Identifiable { }
     }
 
     func fetch() {
+        hasFirstPageLoaded = false
         pager.fetch()
     }
 
